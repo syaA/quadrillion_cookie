@@ -59,6 +59,11 @@
       $("#product"+product)[0].click();
     }
 
+    // 建物の名前..
+    function getProductName(product) {
+      return ["Cursor", "Grandma", "Farm", "Factory", "Mine", "Shipment", "Alchemy lab", "Portal", "Time machine", "Antimatter condenser"][product];
+    }
+
     // 建物の値段.
     function getProductPrice(product) {
       return Number($("#product" + product + " .content .price")[0].textContent.replace(/,/g, ""));
@@ -124,6 +129,7 @@
       // アップグレードは増加 Cps の計算が大変なので、倍になるものとしちゃう.
       var upgradeCnt = getUpgradeCount();
       var minUpgradePrice = 900000000000000;
+      var buyUpgradePrice = 0;
       var buyUpgradeIndex = 0;
       var maxUpgradeRatio = 0;
       for (var i=0; i<upgradeCnt; ++i) {
@@ -137,6 +143,7 @@
         if (ratio > maxUpgradeRatio) {
           maxUpgradeRatio = ratio;
           buyUpgradeIndex = i;
+          buyUpgradePrice = getUpgradePrice(i);
         }
       }
 
@@ -159,9 +166,17 @@
       // アップグレードの最低価格が、買おうとする建物より安いなら、アップグレードを買う.
       minUpgradePrice /= 4; // アップグレードを優遇する.
       if (buyProductPrice > minUpgradePrice) {
-        buyUpgrade(buyUpgradeIndex);
+        if (curCookie >= buyUpgradePrice) {
+          console.log("[info] %d cookies. %d cps", getCurrentCookie(), getCurrentCookiePerSecond());
+          console.log("[buy] Upgrade \"%s\"", getUpgradeName(buyUpgradeIndex));
+          buyUpgrade(buyUpgradeIndex);
+        }
       } else {
-        buyProduct(buyProductIndex);
+        if (curCookie >= buyProductPrice) {
+          console.log("[info] %d cookies. %d cps", getCurrentCookie(), getCurrentCookiePerSecond());
+          console.log("[buy] Product \"%s\"", getProductName(buyProductIndex));
+          buyProduct(buyProductIndex);
+        }
       }
     }
 
