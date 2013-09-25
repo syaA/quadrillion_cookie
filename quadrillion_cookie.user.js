@@ -97,7 +97,7 @@
     
     // 現在の所持クッキー数.
     function getCurrentCookie() {
-      m = $("#cookies")[0].textContent.match(/([0-9,]+) cookiesper second : ([0-9.,])/);
+      m = $("#cookies")[0].textContent.match(/([0-9,]+)\s*cookies\s*per\s*second\s*:\s*([0-9.,]+)/);
       if (m) {
         return Number(m[1].replace(/,/g, ""));
       } else {
@@ -107,7 +107,7 @@
 
     // 現在の所持クッキー数.
     function getCurrentCookiePerSecond() {
-      m = $("#cookies")[0].textContent.match(/([0-9,]+) cookiesper second : ([0-9.,]+)/);
+      m = $("#cookies")[0].textContent.match(/([0-9,]+)\s*cookies\s*per\s*second\s*:\s*([0-9.,]+)/);
       if (m) {
         return parseFloat(m[2].replace(/,/g, ""));
       } else {
