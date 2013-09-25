@@ -119,6 +119,7 @@
     function thinkStep() {
       var curCookie = getCurrentCookie();
       var curCps = getCurrentCookiePerSecond();
+      var limit = curCookie + curCps * 120;
       // 基本方針： 買えるものの中で、増加 Cps / 値段が一番高いものを選ぶ
       // アップグレードは増加 Cps の計算が大変なので、倍になるものとしちゃう.
       var upgradeCnt = getUpgradeCount();
@@ -129,7 +130,7 @@
         if (minUpgradePrice > getUpgradePrice(i)) {
           minUpgradePrice = getUpgradePrice(i);
         }
-        if (getUpgradePrice(i) > curCookie) {
+        if (getUpgradePrice(i) > limit) {
           continue;
         }
         var ratio = curCps / getUpgradePrice(i);
@@ -143,7 +144,7 @@
       var buyProductIndex = 0;
       var maxProductRatio = 0;
       for (var i=0; i<10; ++i) {
-        if (getProductPrice(i) > curCookie) {
+        if (getProductPrice(i) > limit) {
           continue;
         }
         var ratio = getProductCps(i) / getProductPrice(i);
