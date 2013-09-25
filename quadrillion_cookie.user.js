@@ -157,7 +157,7 @@
 
       // アップグレードを優遇する.
       // アップグレードの最低価格が、買おうとする建物より安いなら、アップグレードを買う.
-      minUpgradePrice /= 2; // アップグレードを優遇する.
+      minUpgradePrice /= 4; // アップグレードを優遇する.
       if (buyProductPrice > minUpgradePrice) {
         buyUpgrade(buyUpgradeIndex);
       } else {
