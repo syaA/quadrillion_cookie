@@ -122,7 +122,7 @@
       // 基本方針： 買えるものの中で、増加 Cps / 値段が一番高いものを選ぶ
       // アップグレードは増加 Cps の計算が大変なので、倍になるものとしちゃう.
       var upgradeCnt = getUpgradeCount();
-      var minUpgradePrice = 90000000000;
+      var minUpgradePrice = 900000000000000;
       var buyUpgradeIndex = 0;
       var maxUpgradeRatio = 0;
       for (var i=0; i<upgradeCnt; ++i) {
