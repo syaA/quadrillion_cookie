@@ -78,11 +78,11 @@
     function getUpgradePrice(index) {
       // ババァアポカリプスは厄介なので、とりあえずスルーする...
       // アラートのウィンドウをきちんと消さないと...
-      m = decodeURIComponent($("#upgrades").children()[0].onmouseover).match(/One mind/);
+      m = decodeURIComponent($("#upgrades").children()[index].onmouseover).match(/One mind/);
       if (m) {
         return null
       }
-      m = decodeURIComponent($("#upgrades").children()[0].onmouseover).match(/<span class=\"price\">([0-9,]+)<\/span>/);
+      m = decodeURIComponent($("#upgrades").children()[index].onmouseover).match(/<span class=\"price\">([0-9,]+)<\/span>/);
       if (m) {
         return Number(m[1].replace(/,/g, ""));
       } else {
