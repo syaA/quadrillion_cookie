@@ -142,7 +142,7 @@
       var buyProductPrice = 0;
       var buyProductIndex = 0;
       var maxProductRatio = 0;
-      for (var i=0; i<9; ++i) {
+      for (var i=0; i<10; ++i) {
         if (getProductPrice(i) > curCookie) {
           continue;
         }
