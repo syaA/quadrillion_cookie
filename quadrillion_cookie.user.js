@@ -20,11 +20,8 @@
 
     // 無限に繰り返す.
     function forever(f, wait) {
-      try {
-        f();
-      } catch (e) {
-      }
       setTimeout(function(){
+        f();
         forever(f, wait);
       }, wait);
       
@@ -67,14 +64,35 @@
       return Number($("#product" + product + " .content .price")[0].textContent.replace(/,/g, ""));
     }
 
-    // 建物の利福(アップグレードは考えない.).
-    function getProductCps(product) {
-      var base = $("#rowInfoContent" + product)[0].textContent;
-      var total = Number(base.match(/([0-9,]+) cookies per second/)[1].replace(/,/g, ""));
+    // 建物毎の生産量.
+    function getProductCpsTotal(product) {
+      var base = $("#rowInfoContent" + product);
+      if (base.length) {
+        var m = base[0].textContent.match(/([0-9,]+) cookies per second/);
+        if (m) {
+          return Number(m[1].replace(/,/g, ""));
+        } 
+      }
+      return 0;
+    }
+
+    // 建物の数.
+    function getProductNum(product) {
+      var total = getProductCpsTotal();
       if (total == 0) {
         return 0;
       }
       var num = Number($("#product" + product + " .content .owned")[0].textContent.replace(/,/g, ""));
+      return num;
+    }
+
+    // 建物の利福(アップグレードは考えない.).
+    function getProductCps(product) {
+      var total = getProductCpsTotal(product);
+      if (total == 0) {
+        return 0;
+      }
+      var num = getProductNum(product);
       return total / num
     }
     
@@ -109,6 +127,84 @@
       }
     }
 
+    // アップグレードの利福.
+    function getUpgradeCpsProduct(product, msg) {
+      if (msg.match(/twice/)) {
+        return getProductCpsTotal(product);
+      }
+      var m = msg.match(/<b>\+([0-9.]+)<\/b> base CpS/);
+      if (m) {
+        return Number(m[1]) * getProductNum(product);
+      }
+      return 0;
+    }
+    function getUpgradeCps(index) {
+      // メッセージを適当に解釈する.
+      var base = decodeURIComponent($("#upgrades").children()[index].onmouseover).match(/<div class="description">(.+)<\/div>/);
+      if (!base) {
+        return 0;
+      }
+      var msg = base[1];
+      if (msg.match(/^The mouse and cursors/)) {
+        if (msg.match(/twice/)) {
+          return getProductCpsTotal(0);
+        }
+        var cursorNum = getProductNum(0);
+        var m = msg.match(/<b>\+([0-9.]+)<\/b> cookies for each non-cursor object owned/);
+        if (m) {
+          var nonCursorObjectNum = 0;
+          for (var i=1; i<10; ++i) {
+            nonCursorObjectNum += getProductNum(i);
+          }
+          return Number(m[1]) * cursorNum * nonCursorObjectNum;
+        }
+      } else if (msg.match(/^Clicking/)) {
+        return getCurrentCookiePerSecond() * 0.1;
+      } else if (msg.match(/^The mouse/)) {
+        return getUpgradeCpsProduct(0, msg);
+      } else if (msg.match(/^Grandmas/)) {
+        return getUpgradeCpsProduct(1, msg);
+      } else if (msg.match(/^Farms/)) {
+        return getUpgradeCpsProduct(2, msg);
+      } else if (msg.match(/^Factories/)) {
+        return getUpgradeCpsProduct(3, msg);
+      } else if (msg.match(/^Mines/)) {
+        return getUpgradeCpsProduct(4, msg);
+      } else if (msg.match(/^Shipments/)) {
+        return getUpgradeCpsProduct(5, msg);
+      } else if (msg.match(/^Alchemy labs/)) {
+        return getUpgradeCpsProduct(6, msg);
+      } else if (msg.match(/^Portals/)) {
+        return getUpgradeCpsProduct(7, msg);
+      } else if (msg.match(/^Time machines/)) {
+        return getUpgradeCpsProduct(8, msg);
+      } else if (msg.match(/^Antimatter condensers/)) {
+        return getUpgradeCpsProduct(9, msg);
+      } else if (msg.match(/^Golden cookies/)) {
+        // ゴールデンクッキーは、CPS が二倍になるくらいの勢いにしておく.
+        return getCurrentCookiePerSecond();
+      } else if (msg.match(/^Grandma-operated/)) {
+        // ババァ4倍
+        return getProductCpsTotal(product) * 3;
+      } else if (msg.match(/^[Research]/)) {
+        // 未対応.
+        return 0;
+      } else if (msg.match(/^You gain/)) {
+        // ミルク系も CPS が二倍になるとする.
+        return getCurrentCookiePerSecond();
+      } else if (msg.match(/^Cookie production multiplier/)) {
+        var m = msg.match(/\+[0-9]%/);
+        if (m) {
+          return getBaseCPS() * Number(m);
+        }
+      }
+
+
+      
+      console.log("[error] Can't parse upgrade message (%s).", msg)
+      return 0;
+    }
+
     // アップグレード購入.
     function buyUpgrade(index) {
       $("#upgrades").children()[index].click()
@@ -134,14 +230,26 @@
       }
     }
 
+    // 現在の基本CPS.
+    function getBaseCPS() {
+      var baseCps = 0;
+      for (var i=0; i<10; ++i) {
+        baseCps += getProductCpsTotal(i);
+      }
+      return baseCps;
+    }
+
     // AI.
     function thinkStep() {
       var curCookie = getCurrentCookie();
       var curCps = getCurrentCookiePerSecond();
+      console.log("[info] %d cookies. %.1f cps", curCookie, curCps);
 
-      // n 秒後の cps を最大化する建物を買う.
-      var limit = 60;
-      var most_eff = 0;
+      // n 秒後の cps を最大化する建物かアップグレードを買う.
+      var limit = 60; // ^^;
+      var mostEff = 0;
+      var isUpgrade = false;
+      // 建物.
       var prodCand = 0;
       for (var i=0; i<10; ++i) {
         var eff = 0;
@@ -150,41 +258,37 @@
         } else {
           eff = (limit - (getProductPrice(i) - curCookie) / curCps) * (curCps + getProductCps(i));
         }
-        if (eff > most_eff) {
-          eff = most_eff;
+        if (eff > mostEff) {
+          eff = mostEff;
           prodCand = i;
         }
       }
-      // 一番安いアップグレードを調べておく.
+      // アップグレード.
       var upgradeCnt = getUpgradeCount();
-      var minUpgradePrice = 900000000000000;
       var upgradeCand = -1;
       for (var i=0; i<upgradeCnt; ++i) {
-        if (getUpgradePrice(i) <= minUpgradePrice) {
-          minUpgradePrice = getUpgradePrice(i);
+        var eff = 0;
+        if (getUpgradePrice(i) <= curCookie) {
+          eff = curCookie - getUpgradePrice(i) + (curCps + getUpgradeCps(i)) * limit;
+        } else {
+          eff = (limit - (getUpgradePrice(i) - curCookie) / curCps) * (curCps + getUpgradeCps(i));
+        }
+        if (eff > mostEff) {
+          eff = mostEff;
           upgradeCand = i;
+          isUpgrade = true;
         }
       }
 
-      console.log("[info] Most effective product [%s], %d", getProductName(prodCand), getProductPrice(prodCand));
-      if (upgradeCnt > 0) {
-        console.log("[info] Most effective upgrade [%s], %d", getUpgradeName(upgradeCand), minUpgradePrice);
-      }
-      
-      // アップグレードを優遇する.
-      // アップグレードの最低価格が、建物の倍より安いならアップグレードを買う.
-      var upgradeRatio = 1.5;
-      if (minUpgradePrice < (getProductPrice(prodCand) * upgradeRatio)) {
+      if (isUpgrade) {
         console.log("[info] Choose upgrade [%s]", getUpgradeName(upgradeCand));
-        if (curCookie >= minUpgradePrice) {
-          console.log("[info] %d cookies. %d cps", getCurrentCookie(), getCurrentCookiePerSecond());
+        if (curCookie >= getUpgradePrice(upgradeCand)) {
           console.log("[buy] Upgrade \"%s\"", getUpgradeName(upgradeCand));
           buyUpgrade(upgradeCand);
         }
       } else {
         console.log("[info] Choose product [%s]", getProductName(prodCand));
         if (curCookie >= getProductPrice(prodCand)) {
-          console.log("[info] %d cookies. %d cps", getCurrentCookie(), getCurrentCookiePerSecond());
           console.log("[buy] Product \"%s\"", getProductName(prodCand));
           buyProduct(prodCand);
         }
