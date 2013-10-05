@@ -68,7 +68,7 @@
     function getProductCpsTotal(product) {
       var base = $("#rowInfoContent" + product);
       if (base.length) {
-        var m = base[0].textContent.match(/([0-9,]+) cookies per second/);
+        var m = base[0].textContent.match(/([0-9,.]+) cookies per second/);
         if (m) {
           return Number(m[1].replace(/,/g, ""));
         } 
@@ -78,19 +78,20 @@
 
     // 建物の数.
     function getProductNum(product) {
-      var total = getProductCpsTotal();
-      if (total == 0) {
+      var base = $("#product" + product + " .content .owned");
+      if (base.length) {
+        return Number(base[0].textContent.replace(/,/g, ""));
+      } else {
         return 0;
       }
-      var num = Number($("#product" + product + " .content .owned")[0].textContent.replace(/,/g, ""));
-      return num;
     }
 
     // 建物の利福(アップグレードは考えない.).
     function getProductCps(product) {
       var total = getProductCpsTotal(product);
       if (total == 0) {
-        return 0;
+        // 一個目はデフォルト.
+        return [0.1, 0.5, 2, 10, 40, 100, 400, 6666, 98765, 999999][product];
       }
       var num = getProductNum(product);
       return total / num
@@ -198,8 +199,6 @@
           return getBaseCPS() * Number(m);
         }
       }
-
-
       
       console.log("[error] Can't parse upgrade message (%s).", msg)
       return 0;
@@ -245,8 +244,8 @@
       var curCps = getCurrentCookiePerSecond();
       console.log("[info] %d cookies. %.1f cps", curCookie, curCps);
 
-      // n 秒後の cps を最大化する建物かアップグレードを買う.
-      var limit = 60; // ^^;
+      // n 秒後の cookie 数を最大化する建物かアップグレードを買う.
+      var limit = 300; // ^^;
       var mostEff = 0;
       var isUpgrade = false;
       // 建物.
@@ -255,11 +254,13 @@
         var eff = 0;
         if (getProductPrice(i) <= curCookie) {
           eff = curCookie - getProductPrice(i) + (curCps + getProductCps(i)) * limit;
+console.log("a:product(%d), %d", i, eff)
         } else {
           eff = (limit - (getProductPrice(i) - curCookie) / curCps) * (curCps + getProductCps(i));
+console.log("b:product(%d), %d", i, eff)
         }
-        if (eff > mostEff) {
-          eff = mostEff;
+        if (mostEff < eff) {
+          mostEff = eff;
           prodCand = i;
         }
       }
@@ -270,11 +271,13 @@
         var eff = 0;
         if (getUpgradePrice(i) <= curCookie) {
           eff = curCookie - getUpgradePrice(i) + (curCps + getUpgradeCps(i)) * limit;
+console.log("a:upgrade(%d), %d", i, eff)
         } else {
           eff = (limit - (getUpgradePrice(i) - curCookie) / curCps) * (curCps + getUpgradeCps(i));
+console.log("b:upgrade(%d), %d", i, eff)
         }
-        if (eff > mostEff) {
-          eff = mostEff;
+        if (mostEff < eff) {
+          mostEff = eff;
           upgradeCand = i;
           isUpgrade = true;
         }
