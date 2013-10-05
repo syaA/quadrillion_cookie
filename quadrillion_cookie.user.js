@@ -16,7 +16,7 @@
   }, false);
   document.body.appendChild(script);
 })(function ($) {
-  $(function() {
+  $(window).load(function(){
 
     // クッキーを 1 クリック.
     function clickBigCookie() {
