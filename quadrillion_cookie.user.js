@@ -194,9 +194,9 @@
         // ミルク系も CPS が二倍になるとする.
         return getCurrentCookiePerSecond();
       } else if (msg.match(/^Cookie production multiplier/)) {
-        var m = msg.match(/\+[0-9]%/);
+        var m = msg.match(/\+([0-9]+)%/);
         if (m) {
-          return getBaseCPS() * Number(m);
+          return getBaseCPS() * Number(m[1]);
         }
       }
       
