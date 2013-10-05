@@ -187,7 +187,7 @@
       } else if (msg.match(/^Grandma-operated/)) {
         // ババァ4倍
         return getProductCpsTotal(product) * 3;
-      } else if (msg.match(/^[Research]/)) {
+      } else if (msg.match(/^\[Research\]/)) {
         // 未対応.
         return 0;
       } else if (msg.match(/^You gain/)) {
