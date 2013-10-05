@@ -69,7 +69,13 @@
 
     // 建物の利福(アップグレードは考えない.).
     function getProductCps(product) {
-      return [0.1, 0.5, 2, 10, 40, 100, 400, 6666, 98765, 999999][product]
+      var base = $("#rowInfoContent" + product)[0].textContent;
+      var total = Number(base.match(/([0-9,]+) cookies per second/)[1].replace(/,/g, ""));
+      if (total == 0) {
+        return 0;
+      }
+      var num = Number($("#product" + product + " .content .owned")[0].textContent.replace(/,/g, ""));
+      return total / num
     }
     
     // アップグレードの数.
