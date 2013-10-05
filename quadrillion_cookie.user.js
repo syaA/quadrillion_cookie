@@ -77,6 +77,16 @@
       return $("#upgrades").children().length;
     }
 
+    // アップグレードの名前
+    function getUpgradeName(index) {
+      m = decodeURIComponent($("#upgrades").children()[index].onmouseover).match(/<div class=\"name\">([^<]+)<\/div>/);
+      if (m) {
+        return m[1];
+      } else {
+        return "";
+      }
+    }
+
     // アップグレードの値段.
     function getUpgradePrice(index) {
       // ババァアポカリプスは厄介なので、とりあえずスルーする...
@@ -122,58 +132,55 @@
     function thinkStep() {
       var curCookie = getCurrentCookie();
       var curCps = getCurrentCookiePerSecond();
-      var limit = curCookie + curCps * 120;
-      // 基本方針： 買えるものの中で、増加 Cps / 値段が一番高いものを選ぶ
-      // アップグレードは増加 Cps の計算が大変なので、倍になるものとしちゃう.
+
+      // n 秒後の cps を最大化する建物を買う.
+      var limit = 60;
+      var most_eff = 0;
+      var prodCand = 0;
+      for (var i=0; i<10; ++i) {
+        var eff = 0;
+        if (getProductPrice(i) <= curCookie) {
+          eff = curCookie - getProductPrice(i) + (curCps + getProductCps(i)) * limit;
+        } else {
+          eff = (limit - (getProductPrice(i) - curCookie) / curCps) * (curCps + getProductCps(i));
+        }
+        if (eff > most_eff) {
+          eff = most_eff;
+          prodCand = i;
+        }
+      }
+      // 一番安いアップグレードを調べておく.
       var upgradeCnt = getUpgradeCount();
       var minUpgradePrice = 900000000000000;
-      var buyUpgradePrice = 0;
-      var buyUpgradeIndex = 0;
-      var maxUpgradeRatio = 0;
+      var upgradeCand = -1;
       for (var i=0; i<upgradeCnt; ++i) {
-        if (minUpgradePrice > getUpgradePrice(i)) {
+        if (getUpgradePrice(i) <= minUpgradePrice) {
           minUpgradePrice = getUpgradePrice(i);
-        }
-        if (getUpgradePrice(i) > limit) {
-          continue;
-        }
-        var ratio = curCps / getUpgradePrice(i);
-        if (ratio > maxUpgradeRatio) {
-          maxUpgradeRatio = ratio;
-          buyUpgradeIndex = i;
-          buyUpgradePrice = getUpgradePrice(i);
+          upgradeCand = i;
         }
       }
 
-      var buyProductPrice = 0;
-      var buyProductIndex = 0;
-      var maxProductRatio = 0;
-      for (var i=0; i<10; ++i) {
-        if (getProductPrice(i) > limit) {
-          continue;
-        }
-        var ratio = getProductCps(i) / getProductPrice(i);
-        if (ratio > maxProductRatio) {
-          maxProductRatio = ratio;
-          buyProductIndex = i;
-          buyProductPrice = getProductPrice(i);
-        }
+      console.log("[info] Most effective product [%s], %d", getProductName(prodCand), getProductPrice(prodCand));
+      if (upgradeCnt > 0) {
+        console.log("[info] Most effective upgrade [%s], %d", getUpgradeName(upgradeCand), minUpgradePrice);
       }
-
+      
       // アップグレードを優遇する.
-      // アップグレードの最低価格が、買おうとする建物より安いなら、アップグレードを買う.
-      minUpgradePrice /= 4; // アップグレードを優遇する.
-      if (buyProductPrice > minUpgradePrice) {
-        if (curCookie >= buyUpgradePrice) {
+      // アップグレードの最低価格が、建物の倍より安いならアップグレードを買う.
+      var upgradeRatio = 1.5;
+      if (minUpgradePrice < (getProductPrice(prodCand) * upgradeRatio)) {
+        console.log("[info] Choose upgrade [%s]", getUpgradeName(upgradeCand));
+        if (curCookie >= minUpgradePrice) {
           console.log("[info] %d cookies. %d cps", getCurrentCookie(), getCurrentCookiePerSecond());
-          console.log("[buy] Upgrade \"%s\"", getUpgradeName(buyUpgradeIndex));
-          buyUpgrade(buyUpgradeIndex);
+          console.log("[buy] Upgrade \"%s\"", getUpgradeName(upgradeCand));
+          buyUpgrade(upgradeCand);
         }
       } else {
-        if (curCookie >= buyProductPrice) {
+        console.log("[info] Choose product [%s]", getProductName(prodCand));
+        if (curCookie >= getProductPrice(prodCand)) {
           console.log("[info] %d cookies. %d cps", getCurrentCookie(), getCurrentCookiePerSecond());
-          console.log("[buy] Product \"%s\"", getProductName(buyProductIndex));
-          buyProduct(buyProductIndex);
+          console.log("[buy] Product \"%s\"", getProductName(prodCand));
+          buyProduct(prodCand);
         }
       }
     }
