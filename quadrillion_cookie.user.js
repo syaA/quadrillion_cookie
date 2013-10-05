@@ -85,7 +85,7 @@
       // アラートのウィンドウをきちんと消さないと...
       m = decodeURIComponent($("#upgrades").children()[index].onmouseover).match(/One mind/);
       if (m) {
-        return null
+        return 9000000000000000;
       }
       m = decodeURIComponent($("#upgrades").children()[index].onmouseover).match(/<span class=\"price\">([0-9,]+)<\/span>/);
       if (m) {
