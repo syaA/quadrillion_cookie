@@ -18,17 +18,21 @@
 })(function ($) {
   $(window).load(function(){
 
+    // 無限に繰り返す.
+    function forever(f, wait) {
+      try {
+        f();
+      } catch (e) {
+      }
+      setTimeout(function(){
+        forever(f, wait);
+      }, wait);
+      
+    }
+    
     // クッキーを 1 クリック.
     function clickBigCookie() {
       $("#bigCookie").click();
-    }
-
-    // 指定時間(ms)毎にクッキーをクリック.
-    function clickBigCookieForever(wait) {
-      clickBigCookie();
-      setTimeout(function(){
-        clickBigCookieForever(wait);
-      }, wait);
     }
 
     // ゴールデンクッキーを(あれば)クリック.
@@ -36,12 +40,6 @@
       if ($("#goldenCookie")[0].style.display != "none") {
         $("#goldenCookie")[0].click();
       }
-    }
-
-    // 指定時間(ms)毎にクッキーをクリック.
-    function clickGoldenCookieForever(wait) {
-      clickGoldenCookie();
-      setTimeout(function() { clickGoldenCookieForever(wait); }, wait);
     }
 
     // 建物を買う.
@@ -180,14 +178,9 @@
       }
     }
 
-    function think(wait) {
-      thinkStep();
-      setTimeout(function() { think(wait); }, wait);
-    }
-    
-    clickGoldenCookieForever(100);
-    clickBigCookieForever(10);
-    think(500);
+    forever(clickBigCookie, 100);
+    forever(clickGoldenCookie, 100);
+    forever(thinkStep, 3000);
   })
 });
 
