@@ -286,13 +286,15 @@
       }
 
       if (isUpgrade) {
-        console.log("[info] Choose upgrade [%s]", getUpgradeName(upgradeCand));
+        console.log("[info] Choose upgrade [%s](%d cookies, %d cps)",
+                    getUpgradeName(upgradeCand), getUpgradePrice(upgradeCand), getUpgradeCps(upgradeCand));
         if (curCookie >= getUpgradePrice(upgradeCand)) {
           console.log("[buy] Upgrade \"%s\"", getUpgradeName(upgradeCand));
           buyUpgrade(upgradeCand);
         }
       } else {
-        console.log("[info] Choose product [%s]", getProductName(prodCand));
+        console.log("[info] Choose product [%s](%d cookies, %d cps)",
+                    getProductName(prodCand), getProductPrice(prodCand), getProductCps(prodCand));
         if (curCookie >= getProductPrice(prodCand)) {
           console.log("[buy] Product \"%s\"", getProductName(prodCand));
           buyProduct(prodCand);
