@@ -198,7 +198,7 @@
       } else if (msg.match(/^Cookie production multiplier/)) {
         var m = msg.match(/\+([0-9]+)%/);
         if (m) {
-          return getBaseCPS() * Number(m[1]);
+          return getBaseCPS() * Number(m[1]) / 100;
         }
       }
       
