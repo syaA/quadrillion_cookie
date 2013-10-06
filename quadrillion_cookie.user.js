@@ -248,20 +248,20 @@
 
       // n 秒後の cookie 数を最大化する建物かアップグレードを買う.
       var limit = 300; // ^^;
-      var mostEff = 0;
+      var mostEff = 9007199254740992;
       var isUpgrade = false;
       // 建物.
       var prodCand = 0;
       for (var i=0; i<10; ++i) {
         var eff = 0;
         if (getProductPrice(i) <= curCookie) {
-          eff = getProductCps(i) * limit;
-console.log("a:product(%d), %d", i, eff)
+          eff = getProductPrice(i) / getProductCps(i);
+//          console.log("a:product(%d), %d", i, eff)
         } else {
-          eff = (limit - (getProductPrice(i) - curCookie) / curCps) * getProductCps(i);
-console.log("b:product(%d), %d", i, eff)
+          eff = getProductPrice(i) / getProductCps(i) + (getProductPrice(i) - curCookie) / curCps;
+//          console.log("b:product(%d), %d", i, eff)
         }
-        if (mostEff < eff) {
+        if (mostEff > eff) {
           mostEff = eff;
           prodCand = i;
         }
@@ -272,13 +272,13 @@ console.log("b:product(%d), %d", i, eff)
       for (var i=0; i<upgradeCnt; ++i) {
         var eff = 0;
         if (getUpgradePrice(i) <= curCookie) {
-          eff = getUpgradeCps(i) * limit;
-console.log("a:upgrade(%d), %d", i, eff)
+          eff = getUpgradePrice(i) / getUpgradeCps(i);
+//          console.log("a:upgrade(%d), %d", i, eff)
         } else {
-          eff = (limit - (getUpgradePrice(i) - curCookie) / curCps) * getUpgradeCps(i);
-console.log("b:upgrade(%d), %d", i, eff)
+          eff = getUpgradePrice(i) / getUpgradeCps(i) + (getUpgradePrice(i) - curCookie) / curCps;
+//          console.log("b:upgrade(%d), %d", i, eff)
         }
-        if (mostEff < eff) {
+        if (mostEff > eff) {
           mostEff = eff;
           upgradeCand = i;
           isUpgrade = true;
