@@ -133,9 +133,9 @@
       if (msg.match(/twice/)) {
         return getProductCpsTotal(product);
       }
-      var m = msg.match(/<b>\+([0-9.]+)<\/b> base CpS/);
+      var m = msg.match(/<b>\+([0-9.,]+)<\/b> base CpS/);
       if (m) {
-        return Number(m[1]) * getProductNum(product);
+        return Number(m[1].replace(/,/g, "")) * getProductNum(product);
       }
       return 0;
     }
