@@ -193,8 +193,8 @@
         // 未対応.
         return 0;
       } else if (msg.match(/^You gain/)) {
-        // ミルク系も CPS が二倍になるとする.
-        return getCurrentCookiePerSecond();
+        // ミルク系は CPS が 1.5 倍になるとする.
+        return getCurrentCookiePerSecond() * 0.5;
       } else if (msg.match(/^Cookie production multiplier/)) {
         var m = msg.match(/\+([0-9]+)%/);
         if (m) {
