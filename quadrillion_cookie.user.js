@@ -188,7 +188,7 @@
         return getCurrentCookiePerSecond();
       } else if (msg.match(/^Grandma-operated/)) {
         // ババァ4倍
-        return getProductCpsTotal(product) * 3;
+        return getProductCpsTotal(1) * 3;
       } else if (msg.match(/^\[Research\]/)) {
         // 未対応.
         return 0;
