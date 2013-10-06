@@ -161,6 +161,8 @@
         }
       } else if (msg.match(/^Clicking/)) {
         return getCurrentCookiePerSecond() * 0.1;
+      } else if (msg.match(/^The mouse gains/)) {
+        return 10 + getUpgradeCpsProduct(0, msg);
       } else if (msg.match(/^The mouse/)) {
         return getUpgradeCpsProduct(0, msg);
       } else if (msg.match(/^Grandmas/)) {
