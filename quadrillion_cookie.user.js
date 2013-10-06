@@ -184,8 +184,8 @@
       } else if (msg.match(/^Antimatter condensers/)) {
         return getUpgradeCpsProduct(9, msg);
       } else if (msg.match(/^Golden cookies*/)) {
-        // ゴールデンクッキーは、CPS が二倍になるくらいの勢いにしておく.
-        return getCurrentCookiePerSecond();
+        // ゴールデンクッキーは、CPS が1.5倍になるくらいの勢いにしておく.
+        return getCurrentCookiePerSecond() * 0.5;
       } else if (msg.match(/^Grandma-operated/)) {
         // ババァ4倍
         return getProductCpsTotal(1) * 3;
