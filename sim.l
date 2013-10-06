@@ -70,6 +70,23 @@
       (when cand
         (buy-product cand)))))
 
+(defun simulate-step-after-t2 (wait)
+  (lambda ()
+    (let ((most-eff 0) (cand))
+      (dolist (product +product-base+)
+        (let ((eff
+               (if (<= (product-price (car product)) *cookie*)
+                   (* (caddr product) wait)
+                 (if (> *cps* 0)
+                     (* (- wait (/ (- (product-price (car product)) *cookie*)
+                                   *cps*))
+                        (caddr product))))))
+          (when (and eff (> eff most-eff))
+            (setf most-eff eff)
+            (setf cand (car product)))))
+      (when cand
+        (buy-product cand)))))
+
 (defun simulate-step-after-t-adaptive ()
   (let ((max-price 0) (cand) (wait))
     (dolist (product +product-base+)

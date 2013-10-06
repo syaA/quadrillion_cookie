@@ -255,10 +255,10 @@
       for (var i=0; i<10; ++i) {
         var eff = 0;
         if (getProductPrice(i) <= curCookie) {
-          eff = curCookie - getProductPrice(i) + (curCps + getProductCps(i)) * limit;
+          eff = getProductCps(i) * limit;
 console.log("a:product(%d), %d", i, eff)
         } else {
-          eff = (limit - (getProductPrice(i) - curCookie) / curCps) * (curCps + getProductCps(i));
+          eff = (limit - (getProductPrice(i) - curCookie) / curCps) * getProductCps(i);
 console.log("b:product(%d), %d", i, eff)
         }
         if (mostEff < eff) {
@@ -272,10 +272,10 @@ console.log("b:product(%d), %d", i, eff)
       for (var i=0; i<upgradeCnt; ++i) {
         var eff = 0;
         if (getUpgradePrice(i) <= curCookie) {
-          eff = curCookie - getUpgradePrice(i) + (curCps + getUpgradeCps(i)) * limit;
+          eff = getUpgradeCps(i) * limit;
 console.log("a:upgrade(%d), %d", i, eff)
         } else {
-          eff = (limit - (getUpgradePrice(i) - curCookie) / curCps) * (curCps + getUpgradeCps(i));
+          eff = (limit - (getUpgradePrice(i) - curCookie) / curCps) * getUpgradeCps(i);
 console.log("b:upgrade(%d), %d", i, eff)
         }
         if (mostEff < eff) {
