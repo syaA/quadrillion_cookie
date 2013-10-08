@@ -285,6 +285,28 @@
         }
       }
 
+      // cps が 15 億を超えたあたりからは、一割クッキーに頼る.
+      // x7 中の 1150 倍くらいが一割クッキーで得られる上限ぽいので、
+      // cps x 7 * 1150 * 10 = 80500 倍を維持する.
+      limit = curCps * 7 * 1150 * 10;
+      if (curCps > 1500000000) { // x7 のときは、curCps が増えちゃうので微妙なのだが...
+        console.log("[info] now saving...(%d)", limit);
+        // 購入によって制限を下回るようなら保留する.
+        if (isUpgrade) {
+          if ((curCookie - getUpgradePrice(upgradeCand)) < limit) {
+            console.log("[info] Choose upgrade [%s](%d cookies, %d cps)",
+                        getUpgradeName(upgradeCand), getUpgradePrice(upgradeCand), getUpgradeCps(upgradeCand));
+            return;
+          }
+        } else {
+          if ((curCookie - getProductPrice(prodCand)) < limit) {
+            console.log("[info] Choose product [%s](%d cookies, %d cps)",
+                        getProductName(prodCand), getProductPrice(prodCand), getProductCps(prodCand));
+            return;
+          }
+        }
+      }
+
       if (isUpgrade) {
         console.log("[info] Choose upgrade [%s](%d cookies, %d cps)",
                     getUpgradeName(upgradeCand), getUpgradePrice(upgradeCand), getUpgradeCps(upgradeCand));
