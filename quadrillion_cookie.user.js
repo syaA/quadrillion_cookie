@@ -41,6 +41,13 @@
       $("div a.option.warning:contains(Reset)")[0].click();
     }
 
+    // Statics を見る.
+    function viewStatistics() {
+      if (!$("div.section:contains(Statistics)").length) {
+        $("#statsButton")[0].click();
+      }
+    }
+
     // クッキーを 1 クリック.
     function clickBigCookie() {
       $("#bigCookie").click();
@@ -233,11 +240,29 @@
       return 0;
     }
 
+    // 取得済みのアップグレード数
+    function getUpgradeEnabledCount() {
+      $("div.listing > div.crate.upgrade.enabled").length
+    }
+
+    // アップグレードを取得しているかどうか?
+    function hasUpgrade(name) {
+      viewStatistics();
+      var result = false;
+      $("div.listing > div.crate.upgrade.enabled").each(function(index) {
+        if (decodeURIComponent(this.onmouseover).match(name)) {
+          result = true;
+          return false;
+        }
+      });
+      return result;
+    }
+
     // アップグレード購入.
     function buyUpgrade(index) {
       $("#upgrades").children()[index].click()
     }
-    
+
     // 現在の所持クッキー数.
     function getCurrentCookie() {
       m = $("#cookies")[0].textContent.match(/([0-9,]+)\s*cookies\s*per\s*second\s*:\s*([0-9.,]+)/);
@@ -318,13 +343,58 @@
         }
       }
 
-      // cps が 15 億を超えたあたりからは、一割クッキーに頼る.
-      // x7 中の 1150 倍くらいが一割クッキーで得られる上限ぽいので、
-      // cps x 7 * 1150 * 10 = 80500 倍を維持する.
-      limit = curCps * 7 * 1150 * 10;
-      if (curCps > 1500000000) { // x7 のときは、curCps が増えちゃうので微妙なのだが...
-        console.log("[info] now saving...(%d)", limit);
+      // 貯蓄に回るかどうか.
+      var ratio0 = 0; // cps * 12,000 だけ溜めた時に、一割クッキーで得られる 推定 cps
+      var ratio1 = 0; // cps * 84,000 だけ溜めた時の、x7 倍中に一割クッキーで得られる 推定 cps
+      if (hasUpgrade(/Get lucky/)) {
+        // ゴールデンクッキーのアップグレード 3 つ目まで取れている.
+        ratio0 = 4;
+        ratio1 = 2170.56;
+      } else if (hasUpgrade(/Serendipity/)) {
+        // ゴールデンクッキーのアップグレード 2 つ目まで取れている.
+        ratio0 = 4;
+        ratio1 = 560.56;
+      } else if (hasUpgrade(/Lucky day/)) {
+        // ゴールデンクッキーのアップグレード 1 つ目まで取れている.
+        ratio0 = 2;
+        ratio1 = 140.14;
+      } else {
+        // ゴールデンクッキーのアップグレード なし.
+        ratio0 = 1;
+        ratio1 = 35.035;
+      }
+      // 貯蓄の効果を計算して比較.
+      var isSave = false;
+      var limit = 0;
+      if (12000 * curCps <= curCookie) {
+        isSave = true;
+        console.log("a:saving(%d), %d", 12000, eff);
+        limit = 12000 * curCps;
+      } else {
+        var eff = 12000 / ratio1 + 12000 - curCookie / curCps;
+        console.log("b:saving(%d), %d", 12000, eff);
+        if (mostEff > eff) {
+          limit = 12000 * curCps;
+          isSave = true;
+        }
+      }
+      if (84000 * curCps <= curCookie) {
+        isSave = true;
+        console.log("a:saving(%d), %d", 84000, eff);
+        limit = 84000 * curCps;
+      } else {
+        var eff = 84000 / ratio1 + 84000 - curCookie / curCps;
+        console.log("b:saving(%d), %d", 84000, eff);
+        if (mostEff > eff) {
+          limit = 84000 * curCps;
+          isSave = true;
+        }
+      }
+
+      // 貯蓄する?
+      if (isSave) {
         // 購入によって制限を下回るようなら保留する.
+        console.log("[info] now saving...(%d)", limit);
         if (isUpgrade) {
           if ((curCookie - getUpgradePrice(upgradeCand)) < limit) {
             console.log("[info] Choose upgrade [%s](%d cookies, %d cps)",
