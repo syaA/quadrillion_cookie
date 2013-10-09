@@ -355,19 +355,19 @@
       if (hasUpgrade(/Get lucky/)) {
         // ゴールデンクッキーのアップグレード 3 つ目まで取れている.
         ratio0 = 4;
-        ratio1 = 2170.56;
+        ratio1 = 7.2352;
       } else if (hasUpgrade(/Serendipity/)) {
         // ゴールデンクッキーのアップグレード 2 つ目まで取れている.
         ratio0 = 4;
-        ratio1 = 560.56;
+        ratio1 = 1.868533;
       } else if (hasUpgrade(/Lucky day/)) {
         // ゴールデンクッキーのアップグレード 1 つ目まで取れている.
         ratio0 = 2;
-        ratio1 = 140.14;
+        ratio1 = 0.2335667;
       } else {
         // ゴールデンクッキーのアップグレード なし.
         ratio0 = 1;
-        ratio1 = 35.035;
+        ratio1 = 0.02919583;
       }
       // 貯蓄の効果を計算して比較.
       var isSave = false;
