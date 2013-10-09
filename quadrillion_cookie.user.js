@@ -26,7 +26,21 @@
       }, wait);
       
     }
-    
+
+    // confirm 上書き ^^;
+    window.confirm = function() {
+      return true;
+    }
+
+    // Reset
+    function reset() {
+      if (!$("div a.option.warning:contains(Reset)").length) {
+        // メニューを出す.
+        $("#prefsButton")[0].click();
+      }
+      $("div a.option.warning:contains(Reset)")[0].click();
+    }
+
     // クッキーを 1 クリック.
     function clickBigCookie() {
       $("#bigCookie").click();
@@ -245,6 +259,12 @@
       var curCookie = getCurrentCookie();
       var curCps = getCurrentCookiePerSecond();
       console.log("[info] %d cookies. %.1f cps", curCookie, curCps);
+
+      // 5000兆オーバーでリセットしてみる.
+      if (curCookie > 5000000000000000) {
+        console.log("[info] Reset!!!");
+        reset();
+      }
 
       // n 秒後の cookie 数を最大化する建物かアップグレードを買う.
       var limit = 300; // ^^;
