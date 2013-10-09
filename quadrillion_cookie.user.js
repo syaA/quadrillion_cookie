@@ -311,7 +311,6 @@
       }
 
       // n 秒後の cookie 数を最大化する建物かアップグレードを買う.
-      var limit = 300; // ^^;
       var mostEff = 9007199254740992;
       var isUpgrade = false;
       // 建物.
@@ -374,11 +373,11 @@
       var limit = 0;
       if (12000 * curCps <= curCookie) {
         isSave = true;
-        console.log("a:saving(%d), %d", 12000, eff);
+//        console.log("a:saving(%d), %d", 12000, eff);
         limit = 12000 * curCps;
       } else {
         var eff = 12000 / ratio1 + 12000 - curCookie / curCps;
-        console.log("b:saving(%d), %d", 12000, eff);
+//        console.log("b:saving(%d), %d", 12000, eff);
         if (mostEff > eff) {
           limit = 12000 * curCps;
           isSave = true;
@@ -386,11 +385,11 @@
       }
       if (84000 * curCps <= curCookie) {
         isSave = true;
-        console.log("a:saving(%d), %d", 84000, eff);
+//        console.log("a:saving(%d), %d", 84000, eff);
         limit = 84000 * curCps;
       } else {
         var eff = 84000 / ratio1 + 84000 - curCookie / curCps;
-        console.log("b:saving(%d), %d", 84000, eff);
+//        console.log("b:saving(%d), %d", 84000, eff);
         if (mostEff > eff) {
           limit = 84000 * curCps;
           isSave = true;
@@ -416,6 +415,7 @@
         }
       }
 
+      // 実際に購入.
       if (isUpgrade) {
         console.log("[info] Choose upgrade [%s](%d cookies, %d cps)",
                     getUpgradeName(upgradeCand), getUpgradePrice(upgradeCand), getUpgradeCps(upgradeCand));
