@@ -292,6 +292,12 @@
       return baseCps;
     }
 
+    // 現在のゲームでの総クッキー数.
+    function getBakedCookie() {
+      viewStatistics();
+      return Number($("div.listing:contains(baked (this game)) > div.price.plain")[0].textContent.replace(/,/g, ""));
+    }
+    
     // AI.
     function thinkStep() {
       var curCookie = getCurrentCookie();
@@ -299,7 +305,7 @@
       console.log("[info] %d cookies. %.1f cps", curCookie, curCps);
 
       // 5000兆オーバーでリセットしてみる.
-      if (curCookie > 5000000000000000) {
+      if (getBakedCookie() > 5000000000000000) {
         console.log("[info] Reset!!!");
         reset();
       }
