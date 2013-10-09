@@ -197,9 +197,22 @@
         return getUpgradeCpsProduct(8, msg);
       } else if (msg.match(/^Antimatter condensers/)) {
         return getUpgradeCpsProduct(9, msg);
-      } else if (msg.match(/^Golden cookies*/)) {
-        // ゴールデンクッキーは、CPS が1.5倍になるくらいの勢いにしておく.
-        return getCurrentCookiePerSecond() * 0.5;
+      } else if (msg.match(/^Golden cookies* /)) {
+        // ゴールデンクッキー.
+        // ベース 10 分に一個くらい出る気がする...
+        // ここでは確実に得られる x7 の分のみ計算する.
+        var ratio = 0;
+        if (msg.match(/Oh hey/)) {
+          // 一個目
+          ratio =  6 * 77 / 600 - 6 * 77 / 1200;
+        } else if (msg.match(/What joy!/)) {
+          // 二個目
+          ratio =  6 * 77 / 300 - 6 * 77 / 600;
+        } else if (msg.match(/all night/)) {
+          // 三個目
+          ratio =  6 * 152 / 300 - 6 * 77 / 300;
+        }
+        return getCurrentCookiePerSecond() * ratio;
       } else if (msg.match(/^Grandma-operated/)) {
         // ババァ4倍
         return getProductCpsTotal(1) * 3;
