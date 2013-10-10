@@ -351,22 +351,23 @@
       // 貯蓄に回るかどうか.
       var ratio0 = 0; // cps * 12,000 だけ溜めた時に、一割クッキーで得られる 推定 cps
       var ratio1 = 0; // cps * 84,000 だけ溜めた時の、x7 倍中に一割クッキーで得られる 推定 cps
+      // x7 中に 一割が来る確率は、t(t+1)/(2*T^2) t:x7 持続時間 T:発生頻度 で与えられる.
       if (hasUpgrade(/Get lucky/)) {
         // ゴールデンクッキーのアップグレード 3 つ目まで取れている.
         ratio0 = 4;
-        ratio1 = 7.2352;
+        ratio1 = 16.4032;
       } else if (hasUpgrade(/Serendipity/)) {
         // ゴールデンクッキーのアップグレード 2 つ目まで取れている.
         ratio0 = 4;
-        ratio1 = 1.868533;
+        ratio1 = 7.2032;
       } else if (hasUpgrade(/Lucky day/)) {
         // ゴールデンクッキーのアップグレード 1 つ目まで取れている.
         ratio0 = 2;
-        ratio1 = 0.2335667;
+        ratio1 = 2.4004;
       } else {
         // ゴールデンクッキーのアップグレード なし.
         ratio0 = 1;
-        ratio1 = 0.02919583;
+        ratio1 = 1.05005;
       }
       // 貯蓄の効果を計算して比較.
       var isSave = false;
