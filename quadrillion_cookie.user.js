@@ -300,6 +300,8 @@
     
     // AI.
     function thinkStep() {
+      var wait = 3000;
+
       var curCookie = getCurrentCookie();
       var curCps = getCurrentCookiePerSecond();
       console.log("[info] %d cookies. %.1f cps", curCookie, curCps);
@@ -405,13 +407,13 @@
           if ((curCookie - getUpgradePrice(upgradeCand)) < limit) {
             console.log("[info] Choose upgrade [%s](%d cookies, %d cps)",
                         getUpgradeName(upgradeCand), getUpgradePrice(upgradeCand), getUpgradeCps(upgradeCand));
-            return;
+            return wait;
           }
         } else {
           if ((curCookie - getProductPrice(prodCand)) < limit) {
             console.log("[info] Choose product [%s](%d cookies, %d cps)",
                         getProductName(prodCand), getProductPrice(prodCand), getProductCps(prodCand));
-            return;
+            return wait;
           }
         }
       }
@@ -423,6 +425,7 @@
         if (curCookie >= getUpgradePrice(upgradeCand)) {
           console.log("[buy] Upgrade \"%s\"", getUpgradeName(upgradeCand));
           buyUpgrade(upgradeCand);
+          wait = 500;
         }
       } else {
         console.log("[info] Choose product [%s](%d cookies, %d cps)",
@@ -430,13 +433,24 @@
         if (curCookie >= getProductPrice(prodCand)) {
           console.log("[buy] Product \"%s\"", getProductName(prodCand));
           buyProduct(prodCand);
+          wait = 500;
         }
       }
+
+      return wait;
+    }
+
+    function thinkLoop(wait)
+    {
+      setTimeout(function(){
+        var nextWait = thinkStep();
+        thinkLoop(nextWait);
+      }, wait);
     }
 
     forever(clickBigCookie, 100);
     forever(clickGoldenCookie, 100);
-    forever(thinkStep, 3000);
+    thinkLoop(3000);
   })
 });
 
