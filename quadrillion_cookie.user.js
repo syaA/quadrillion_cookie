@@ -376,7 +376,7 @@
       var limit = 0;
       if (12000 * curCps <= curCookie) {
         isSave = true;
-//        console.log("a:saving(%d), %d", 12000, eff);
+//        console.log("a:saving(%d), %d", 12000, 0);
         limit = 12000 * curCps;
       } else {
         var eff = 12000 / ratio1 + 12000 - curCookie / curCps;
@@ -388,7 +388,7 @@
       }
       if (84000 * curCps <= curCookie) {
         isSave = true;
-//        console.log("a:saving(%d), %d", 84000, eff);
+//        console.log("a:saving(%d), %d", 84000, 0);
         limit = 84000 * curCps;
       } else {
         var eff = 84000 / ratio1 + 84000 - curCookie / curCps;
