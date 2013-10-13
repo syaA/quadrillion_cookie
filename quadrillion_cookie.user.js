@@ -304,10 +304,11 @@
 
       var curCookie = getCurrentCookie();
       var curCps = getCurrentCookiePerSecond();
+      var bakedCookie = getBakedCookie();
       console.log("[info] %d cookies. %.1f cps", curCookie, curCps);
 
       // 5000兆オーバーでリセットしてみる.
-      if (getBakedCookie() > 5000000000000000) {
+      if (bakedCookie > 3000000000000000) {
         console.log("[info] Reset!!!");
         reset();
       }
@@ -400,6 +401,7 @@
       }
 
       // 貯蓄する?
+      isSuppress = false;
       if (isSave) {
         // 購入によって制限を下回るようなら保留する.
         console.log("[info] now saving...(%d)", limit);
@@ -407,39 +409,51 @@
           if ((curCookie - getUpgradePrice(upgradeCand)) < limit) {
             console.log("[info] Choose upgrade [%s](%d cookies, %d cps)",
                         getUpgradeName(upgradeCand), getUpgradePrice(upgradeCand), getUpgradeCps(upgradeCand));
-            return wait;
+            isSuppress = true;
           }
         } else {
           if ((curCookie - getProductPrice(prodCand)) < limit) {
             console.log("[info] Choose product [%s](%d cookies, %d cps)",
                         getProductName(prodCand), getProductPrice(prodCand), getProductCps(prodCand));
-            return wait;
+            isSuppress = true;
           }
         }
       }
-
-      // 実際に購入.
-      if (isUpgrade) {
-        console.log("[info] Choose upgrade [%s](%d cookies, %d cps)",
-                    getUpgradeName(upgradeCand), getUpgradePrice(upgradeCand), getUpgradeCps(upgradeCand));
-        if (curCookie >= getUpgradePrice(upgradeCand)) {
-          console.log("[buy] Upgrade \"%s\"", getUpgradeName(upgradeCand));
-          buyUpgrade(upgradeCand);
-          wait = 500;
-        }
-      } else {
-        console.log("[info] Choose product [%s](%d cookies, %d cps)",
-                    getProductName(prodCand), getProductPrice(prodCand), getProductCps(prodCand));
-        if (curCookie >= getProductPrice(prodCand)) {
-          console.log("[buy] Product \"%s\"", getProductName(prodCand));
-          buyProduct(prodCand);
-          wait = 500;
+      if (!isSuppress)  {
+        // 実際に購入.
+        if (isUpgrade) {
+          console.log("[info] Choose upgrade [%s](%d cookies, %d cps)",
+                      getUpgradeName(upgradeCand), getUpgradePrice(upgradeCand), getUpgradeCps(upgradeCand));
+          if (curCookie >= getUpgradePrice(upgradeCand)) {
+            console.log("[buy] Upgrade \"%s\"", getUpgradeName(upgradeCand));
+            buyUpgrade(upgradeCand);
+            wait = 500;
+          }
+        } else {
+          console.log("[info] Choose product [%s](%d cookies, %d cps)",
+                      getProductName(prodCand), getProductPrice(prodCand), getProductCps(prodCand));
+          if (curCookie >= getProductPrice(prodCand)) {
+            console.log("[buy] Product \"%s\"", getProductName(prodCand));
+            buyProduct(prodCand);
+            wait = 500;
+          }
         }
       }
 
       return wait;
     }
 
+    function sendLog()
+    {
+      var curCookie = getCurrentCookie();
+      var curCps = getCurrentCookiePerSecond();
+      var bakedCookie = getBakedCookie();
+      $.post('http://localhost:20080/append_log',
+             {bakedCookie: bakedCookie,
+              curCookie: curCookie,
+              curCps: curCps});
+    }
+    
     function thinkLoop(wait)
     {
       setTimeout(function(){
@@ -451,6 +465,7 @@
     forever(clickBigCookie, 100);
     forever(clickGoldenCookie, 100);
     thinkLoop(3000);
+    forever(sendLog, 1000);
   })
 });
 
