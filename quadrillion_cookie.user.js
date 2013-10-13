@@ -465,7 +465,7 @@
     forever(clickBigCookie, 100);
     forever(clickGoldenCookie, 100);
     thinkLoop(3000);
-    forever(sendLog, 1000);
+    forever(sendLog, 60000);
   })
 });
 
