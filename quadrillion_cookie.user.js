@@ -55,8 +55,10 @@
 
     // ゴールデンクッキーを(あれば)クリック.
     function clickGoldenCookie() {
-      if ($("#goldenCookie")[0].style.display != "none") {
-        $("#goldenCookie")[0].click();
+      if ($("#goldenCookie").length) {
+        if ($("#goldenCookie")[0].style.display != "none") {
+          $("#goldenCookie")[0].click();
+        }
       }
     }
 
@@ -265,6 +267,9 @@
 
     // 現在の所持クッキー数.
     function getCurrentCookie() {
+      if (!$("#cookies").length) {
+        return 0;
+      }
       m = $("#cookies")[0].textContent.match(/([0-9,]+)\s*cookies\s*per\s*second\s*:\s*([0-9.,]+)/);
       if (m) {
         return Number(m[1].replace(/,/g, ""));
