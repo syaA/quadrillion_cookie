@@ -165,6 +165,27 @@
       }
     }
 
+    // ネコによるスケールを得る.
+    function getKittenScale()
+    {
+      viewStatistics();
+      var milk = getMilkDepth();
+      var ratio = 1.0;
+      if (hasUpgrade(/Kitten helpers/)) {
+        ratio *= 1 + milk / 2000;
+      }
+      if (hasUpgrade(/Kitten workers/)) {
+        ratio *= 1 + milk / 1000;
+      }
+      if (hasUpgrade(/Kitten engineers/)) {
+        ratio *= 1 + milk / 500;
+      }
+      if (hasUpgrade(/Kitten overseers/)) {
+        ratio *= 1 + milk / 500;
+      }
+      return ratio;
+    }
+
     // アップグレードの利福.
     function getUpgradeCpsProduct(product, msg) {
       if (msg.match(/twice/)) {
@@ -260,7 +281,7 @@
       } else if (msg.match(/^Cookie production multiplier/)) {
         var m = msg.match(/\+([0-9]+)%/);
         if (m) {
-          return getBaseCPS() * Number(m[1]) / 100;
+          return getBaseCPS() * Number(m[1]) / 100 * getKittenScale();
         }
       }
       
