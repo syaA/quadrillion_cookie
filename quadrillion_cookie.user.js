@@ -186,6 +186,20 @@
       return ratio;
     }
 
+    // heavenly chips 枚数
+    function getHeavenlyChips() {
+      viewStatistics();
+      if (!$("span.title:contains(heavenly chips)").length) {
+        return 0;
+      }
+      m = $("span.title:contains(heavenly chips)")[0].textContent.match(/([0-9]+) heavenly chips/);
+      if (m) {
+        return Number(m[1]);
+      } else {
+        return 0;
+      }
+    }
+
     // アップグレードの利福.
     function getUpgradeCpsProduct(product, msg) {
       if (msg.match(/twice/)) {
@@ -283,8 +297,27 @@
         if (m) {
           return getBaseCPS() * Number(m[1]) / 100 * getKittenScale();
         }
+      } else if (msg.match(/^Unlocks/)) {
+        // heavenly chips 開放.
+        var m = msg.match(/([0-9]+)%/);
+        if (m) {
+          var num = Number(m[1]);
+          var ratio = 0;
+          // 増加分
+          if (num == 5) {
+            ratio = 5;
+          } else if (num == 25) {
+            ratio = 25 - 5;
+          } else if (num == 50) {
+            ratio = 50 - 25;
+          } else if (num == 75) {
+            ratio = 75 - 50;
+          } else if (num == 100) {
+            ratio = 100 - 75;
+          }
+          return getBaseCPS() * getHeavenlyChips() * 2 / 100 * ratio / 100 * getKittenScale();
+        }
       }
-      
       console.log("[error] Can't parse upgrade message (%s).", msg)
       return 0;
     }
