@@ -151,6 +151,20 @@
       }
     }
 
+    // ミルクを得る.
+    function getMilkDepth() {
+      viewStatistics();
+      if (!$("div.listing:contains(milk)").length) {
+        return 0;
+      }
+      m = $("div.listing:contains(milk)")[0].textContent.match(/([0-9]+)%/);
+      if (m) {
+        return Number(m[1]);
+      } else {
+        return 0;
+      }
+    }
+
     // アップグレードの利福.
     function getUpgradeCpsProduct(product, msg) {
       if (msg.match(/twice/)) {
@@ -164,11 +178,12 @@
     }
     function getUpgradeCps(index) {
       // メッセージを適当に解釈する.
-      var base = decodeURIComponent($("#upgrades").children()[index].onmouseover).match(/<div class="description">(.+)<\/div>/);
+      var base = decodeURIComponent($("#upgrades").children()[index].onmouseover).match(/<div class="name">(.+)<\/div>.*<div class="description">(.+)<\/div>/);
       if (!base) {
         return 0;
       }
-      var msg = base[1];
+      var name = base[1]
+      var msg = base[2];
       if (msg.match(/^The mouse and cursors/)) {
         if (msg.match(/twice/)) {
           return getProductCpsTotal(0);
@@ -229,8 +244,19 @@
         // 未対応.
         return 0;
       } else if (msg.match(/^You gain/)) {
-        // ミルク系は CPS が 1.5 倍になるとする.
-        return getCurrentCookiePerSecond() * 0.5;
+        // ミルク系.
+        var milk = getMilkDepth();
+        var ratio = 0;
+        if (name.match(/helpers/)) {
+          ratio = milk / 2000;
+        } else if (name.match(/workers/)) {
+          ratio = milk / 1000;
+        } else if (name.match(/engineers/)) {
+          ratio = milk / 500;
+        } else if (name.match(/overseers/)) {
+          ratio = milk / 500;
+        }
+        return getCurrentCookiePerSecond() * ratio;
       } else if (msg.match(/^Cookie production multiplier/)) {
         var m = msg.match(/\+([0-9]+)%/);
         if (m) {
