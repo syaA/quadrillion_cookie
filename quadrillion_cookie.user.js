@@ -392,8 +392,8 @@
       var bakedCookie = getBakedCookie();
       console.log("[info] %d cookies. %.1f cps", curCookie, curCps);
 
-      // 5000兆オーバーでリセットしてみる.
-      if (bakedCookie > 3000000000000000) {
+      // 1000兆オーバーでリセットしてみる.
+      if (bakedCookie > 1000000000000000) {
         console.log("[info] Reset!!!");
         reset();
       }
